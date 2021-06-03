@@ -5,7 +5,7 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
  
     var locationManager: CLLocationManager
     var lastLocation: CLLocation?
-    var locBuffer: Array<Position>
+    var locBuffer: [Position]
     var deviceId: String
     var timer: Timer
     public var started: Bool
