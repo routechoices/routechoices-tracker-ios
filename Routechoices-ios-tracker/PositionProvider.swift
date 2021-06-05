@@ -43,6 +43,9 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
         if (times.count == 0) {
             return
         }
+        if (self.deviceId == "") {
+            self.deviceId = userDefaults.string(forKey: "device_id_preference") ?? ""
+        }
         let params = ["latitudes": lats, "longitudes": lons, "timestamps": times, "device_id": self.deviceId]
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: params)
