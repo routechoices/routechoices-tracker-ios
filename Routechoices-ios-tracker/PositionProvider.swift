@@ -44,6 +44,7 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
             return
         }
         if (self.deviceId == "") {
+            let userDefaults = UserDefaults.standard
             self.deviceId = userDefaults.string(forKey: "device_id_preference") ?? ""
         }
         let params = ["latitudes": lats, "longitudes": lons, "timestamps": times, "device_id": self.deviceId]
@@ -58,7 +59,7 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
         let task = session.dataTask(with: request, completionHandler: {(data, response, error) -> Void in
             if (data != nil && error == nil) {
                 self.locBuffer.removeAll()
-                print("OK")
+                print("Positions sent")
             }
         })
         task.resume()
@@ -102,7 +103,7 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
             if (lastLocation == nil
                 || location.timestamp.timeIntervalSince(lastLocation!.timestamp) >= 1 
                 ) && location.horizontalAccuracy <= 50 {
-                let position = Position(self.deviceId, location)
+                let position = Position(location)
                 lastLocation = location
                 locBuffer.append(position)
                 print("TS: " + String(describing: position.time))
