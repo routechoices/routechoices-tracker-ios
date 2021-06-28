@@ -30,7 +30,7 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
     @objc func flushBuffer() {
         let session = URLSession.shared
 
-        var request = URLRequest(url: URL(string: "https://www.routechoices.com/api/garmin")!)
+        var request = URLRequest(url: URL(string: "https://api.routechoices.com/locations")!)
         request.httpMethod = "POST"
         var lats = ""
         var lons = ""

@@ -60,7 +60,7 @@ struct ContentView: View {
     
     private func requestDeviceId() {
         let session = URLSession.shared
-        var request = URLRequest(url: URL(string: "https://www.routechoices.com/api/device_id/")!)
+        var request = URLRequest(url: URL(string: "https://api.routechoices.com/device_id")!)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
