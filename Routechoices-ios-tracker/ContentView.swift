@@ -55,6 +55,13 @@ struct ContentView: View {
                 .foregroundColor(.white)
                 .cornerRadius(8)
             }
+            
+            Text(" ").padding()
+            Button("Register to an event", action: {() -> Void in
+                if let requestUrl = NSURL(string: "https://registration.routechoices.com") {
+                    UIApplication.shared.open(requestUrl as URL)
+                }
+            })
         }
     }
     
