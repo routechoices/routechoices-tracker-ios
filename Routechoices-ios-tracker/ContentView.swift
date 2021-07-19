@@ -58,7 +58,7 @@ struct ContentView: View {
             
             Text(" ").padding()
             Button("Register to an event", action: {() -> Void in
-                if let requestUrl = NSURL(string: "https://registration.routechoices.com") {
+                if let requestUrl = NSURL(string: "https://registration.routechoices.com/#device_id="+content.deviceId) {
                     UIApplication.shared.open(requestUrl as URL)
                 }
             })
