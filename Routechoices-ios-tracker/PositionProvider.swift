@@ -4,7 +4,7 @@ import CoreLocation
 class PositionProvider: NSObject, CLLocationManagerDelegate {
  
     var locationManager: CLLocationManager
-    var lastLocation: CLLocation?
+    public var lastLocation: CLLocation?
     var locBuffer: [Position]
     var deviceId: String
     var timer: Timer

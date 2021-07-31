@@ -6,13 +6,30 @@
 //
 
 import SwiftUI
+import Combine
 
 class ContentViewModel: ObservableObject {
     @Published var deviceId: String = ""
 }
 
+class TimerWrapper : ObservableObject {
+    let objectWillChange = ObservableObjectPublisher()
+
+    var timer : Timer!
+    func start(withTimeInterval interval: Double = 1) {
+        self.timer?.invalidate()
+        self.timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+            self.objectWillChange.send()
+        }
+    }
+    
+    func stop() {
+        self.timer?.invalidate()
+    }
+}
 struct ContentView: View {
     @ObservedObject var content = ContentViewModel()
+    @ObservedObject var timerWrapper = TimerWrapper()
     @State var started: Bool
     var positionProvider: PositionProvider
 
@@ -24,6 +41,7 @@ struct ContentView: View {
         if (content.deviceId == "") {
             self.requestDeviceId()
         }
+        timerWrapper.start()
     }
 
     var body: some View {
@@ -32,7 +50,7 @@ struct ContentView: View {
         if (content.deviceId == "") {
             Text("Fetching...").padding()
         } else {
-            Text(content.deviceId).padding()
+            Text(content.deviceId).padding().foregroundColor(getGpsStatusStyle())
             Button("Copy", action: {() -> Void in
                 UIPasteboard.general.string = content.deviceId
             })
@@ -63,6 +81,17 @@ struct ContentView: View {
                 }
             })
         }
+    }
+    private func getGpsStatusStyle() -> Color {
+        if (started && positionProvider.lastLocation != nil) {
+            let date = NSDate()
+            let gpstime = positionProvider.lastLocation?.timestamp as NSDate?
+            let age = date.timeIntervalSince1970 - (gpstime?.timeIntervalSince1970 ?? 0)
+            if (age <= 10) {
+                return Color.green
+            }
+        }
+        return Color.red
     }
     
     private func requestDeviceId() {
@@ -99,7 +128,7 @@ struct ContentView: View {
     
     private func start() {
         positionProvider.startUpdates()
-        self.started = true
+        started = true
     }
 
     private func stop() {
