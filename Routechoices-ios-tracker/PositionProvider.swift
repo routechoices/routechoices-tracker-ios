@@ -1,14 +1,15 @@
 import UIKit
 import CoreLocation
 
-class PositionProvider: NSObject, CLLocationManagerDelegate {
+class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
  
     var locationManager: CLLocationManager
-    public var lastLocation: CLLocation?
+    var lastLocation: CLLocation?
+    @Published var lastTimeSinceFix: Double
     var locBuffer: [Position]
     var deviceId: String
     var timer: Timer
-    public var started: Bool
+    @Published var started: Bool
     var pendingStart = false
     
     override init() {
@@ -22,6 +23,7 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.allowsBackgroundLocationUpdates = true
         started = false
+        lastTimeSinceFix = 60
         super.init()
 
         locationManager.delegate = self
@@ -76,14 +78,21 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
             pendingStart = true
             locationManager.requestAlwaysAuthorization()
         }
-        started = true
+        
+        DispatchQueue.main.async {
+            self.started = true
+        }
     }
     
     func stopUpdates() {
         locationManager.stopUpdatingLocation()
         timer.invalidate()
         self.flushBuffer()
-        started = false
+        
+        DispatchQueue.main.async {
+            self.started = false
+        }
+        
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -106,7 +115,13 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
                 let position = Position(location)
                 lastLocation = location
                 locBuffer.append(position)
+                
                 print("TS: " + String(describing: position.time))
+            }
+            DispatchQueue.main.async {
+                if (self.lastLocation != nil) {
+                    self.lastTimeSinceFix = location.timestamp.timeIntervalSince(self.lastLocation!.timestamp)
+                }
             }
         }
     }
