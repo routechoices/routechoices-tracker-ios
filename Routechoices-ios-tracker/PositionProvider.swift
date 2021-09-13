@@ -101,6 +101,7 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
             if pendingStart {
                 pendingStart = false
                 locationManager.startUpdatingLocation()
+                timer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(flushBuffer), userInfo: nil, repeats: true)
             }
         default:
             break
