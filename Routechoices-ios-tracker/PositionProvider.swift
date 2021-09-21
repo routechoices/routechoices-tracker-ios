@@ -49,7 +49,8 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
             let userDefaults = UserDefaults.standard
             self.deviceId = userDefaults.string(forKey: "device_id_preference") ?? ""
         }
-        let params = ["latitudes": lats, "longitudes": lons, "timestamps": times, "device_id": self.deviceId]
+        let secret = Bundle.main.infoDictionary?["POST_LOCATION_SECRET"] ?? ""
+        let params = ["latitudes": lats, "longitudes": lons, "timestamps": times, "device_id": self.deviceId, "secret": secret]
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: params)
         } catch _ {

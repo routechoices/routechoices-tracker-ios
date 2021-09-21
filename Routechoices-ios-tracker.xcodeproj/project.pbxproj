@@ -24,6 +24,7 @@
 		692B0F5326665BE30088EC92 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		692B0F5926665C700088EC92 /* PositionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionProvider.swift; sourceTree = "<group>"; };
 		692B0F5B26665E4F0088EC92 /* Position.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Position.swift; sourceTree = "<group>"; };
+		69E171FD26FA407100BD6CA3 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +63,7 @@
 				692B0F5926665C700088EC92 /* PositionProvider.swift */,
 				692B0F4E26665BE30088EC92 /* Assets.xcassets */,
 				692B0F5326665BE30088EC92 /* Info.plist */,
+				69E171FD26FA407100BD6CA3 /* Config.xcconfig */,
 				692B0F5026665BE30088EC92 /* Preview Content */,
 			);
 			path = "Routechoices-ios-tracker";
@@ -156,6 +158,7 @@
 /* Begin XCBuildConfiguration section */
 		692B0F5426665BE30088EC92 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 69E171FD26FA407100BD6CA3 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -217,6 +220,7 @@
 		};
 		692B0F5526665BE30088EC92 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 69E171FD26FA407100BD6CA3 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
