@@ -21,6 +21,8 @@ struct ContentView: View {
         content.deviceId = userDefaults.string(forKey: "device_id_preference") ?? ""
         if (content.deviceId == "") {
             self.requestDeviceId()
+        } else {
+            self.renewDeviceIdIfNeeded(currentDeviceId: content.deviceId)
         }
     }
     
@@ -68,13 +70,56 @@ struct ContentView: View {
             })
         }
     }
-    
+    private func renewDeviceIdIfNeeded(currentDeviceId: String) {
+        let isNew = currentDeviceId.range(of: #"[^0-9]"#, options: .regularExpression) == nil
+        if (isNew) {
+            return
+        }
+        let session = URLSession.shared
+        var request = URLRequest(url: URL(string: "https://api.routechoices.com/device/" + currentDeviceId + "/registrations" )!)
+        request.httpMethod = "GET"
+
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+
+        let task = session.dataTask(with: request, completionHandler: { (data, response, error) -> Void in
+            print("check DevID")
+            guard let data = data else {
+                return
+            }
+            if (error == nil) {
+                do {
+                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                        let regCount = json["count"] as? Int ?? 0
+                        if (regCount == 0) {
+                            self.requestDeviceId()
+                        }
+                        return
+                    }
+                } catch _ {
+                }
+            }
+            self.requestDeviceId()
+        })
+        task.resume()
+    }
     private func requestDeviceId() {
         let session = URLSession.shared
         var request = URLRequest(url: URL(string: "https://api.routechoices.com/device_id")!)
         request.httpMethod = "POST"
+
+        let secret = Bundle.main.infoDictionary?["POST_LOCATION_SECRET"] ?? ""
+        let params = ["secret": secret]
+
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: params)
+        } catch _ {
+            return
+        }
+
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
+
         let task = session.dataTask(with: request, completionHandler: { (data, response, error) -> Void in
             print("DevID")
             guard let data = data else {
