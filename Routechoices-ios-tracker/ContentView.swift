@@ -15,10 +15,44 @@ class ContentViewModel: ObservableObject {
 struct ContentView: View {
     @ObservedObject var content = ContentViewModel()
     @StateObject var positionProvider = PositionProvider()
-
+    var supportedLang = ["en", "fi", "fr"]
+    var lang = "en"
+    var texts: [String: String] = [:]
+    var translations = [
+        "en": [
+            "dev-id": "Device ID",
+            "fetching": "Fetching...",
+            "copy": "Copy",
+            "start-gps": "Start live GPS",
+            "stop-gps": "Stop live GPS",
+            "register": "Register to an event",
+        ],
+        "fr": [
+            "dev-id": "Identifiant de l'appareil",
+            "fetching": "Chargement...",
+            "copy": "Copier",
+            "start-gps": "Démarrer le GPS",
+            "stop-gps": "Arrêter le GPS",
+            "register": "Inscription à un événement",
+        ],
+        "fi": [
+            "dev-id": "Laitetunnus",
+            "fetching": "Haetaan...",
+            "copy": "Kopio",
+            "start-gps": "Aloita live-gps",
+            "stop-gps": "Lopeta live-gps",
+            "register": "Ilmoittautua tapahtumaan",
+        ],
+    ]
+    
     init() {
         let userDefaults = UserDefaults.standard
         content.deviceId = userDefaults.string(forKey: "device_id_preference") ?? ""
+        let localLang = String(Locale.preferredLanguages[0].prefix(2))
+        if (supportedLang.contains(localLang)){
+            lang = localLang
+        }
+        texts = translations[lang] ?? [:]
         if (content.deviceId == "") {
             self.requestDeviceId()
         } else {
@@ -30,22 +64,23 @@ struct ContentView: View {
         if (!positionProvider.started || positionProvider.lastTimeSinceFix > 10){ return Color.red }
         return Color.green
     }
-
+    
+    
     var body: some View {
         Image("ic_launcher")
-        Text("Device ID")
+        Text(texts["dev-id"] ?? "")
         if (content.deviceId == "") {
-            Text("Fetching...").padding()
+            Text(texts["fetching"] ?? "").padding()
         } else {
             Text(content.deviceId).padding().foregroundColor(getTimeSinceLastFixColor())
                         
-            Button("Copy", action: {() -> Void in
+            Button(texts["copy"] ?? "", action: {() -> Void in
                 UIPasteboard.general.string = content.deviceId
             })
             Text(" ").padding()
             
             if(!positionProvider.started){
-                Button("Start live gps", action: {() -> Void in
+                Button(texts["start-gps"] ?? "", action: {() -> Void in
                     start()
                 })
                 .padding()
@@ -53,7 +88,7 @@ struct ContentView: View {
                 .foregroundColor(.white)
                 .cornerRadius(8)
             } else {
-                Button("Stop live gps", action: {() -> Void in
+                Button(texts["stop-gps"] ?? "", action: {() -> Void in
                     stop()
                 })
                 .padding()
@@ -63,7 +98,7 @@ struct ContentView: View {
             }
             
             Text(" ").padding()
-            Button("Register to an event", action: {() -> Void in
+            Button(texts["register"] ?? "", action: {() -> Void in
                 if let requestUrl = NSURL(string: "https://registration.routechoices.com/#device_id="+content.deviceId) {
                     UIApplication.shared.open(requestUrl as URL)
                 }
