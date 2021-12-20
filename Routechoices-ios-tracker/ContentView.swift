@@ -15,7 +15,7 @@ class ContentViewModel: ObservableObject {
 struct ContentView: View {
     @ObservedObject var content = ContentViewModel()
     @StateObject var positionProvider = PositionProvider()
-    var supportedLang = ["en", "fi", "fr"]
+    var supportedLang = ["en", "fi", "fr", "sv"]
     var lang = "en"
     var texts: [String: String] = [:]
     var translations = [
@@ -42,6 +42,14 @@ struct ContentView: View {
             "start-gps": "Aloita live-gps",
             "stop-gps": "Lopeta live-gps",
             "register": "Ilmoittautua tapahtumaan",
+        ],
+        "sv": [
+            "dev-id": "Enhets-ID",
+            "fetching": "Hämtar data",
+            "copy": "Kopiera",
+            "start-gps": "Starta live GPS",
+            "stop-gps": "Stoppa live GPS",
+            "register": "Registrera till ett evenemang",
         ],
     ]
     
