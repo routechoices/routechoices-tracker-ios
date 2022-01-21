@@ -123,9 +123,6 @@ struct ContentView: View {
     }
     private func renewDeviceIdIfNeeded(currentDeviceId: String) {
         let isNew = currentDeviceId.range(of: #"[^0-9]"#, options: .regularExpression) == nil
-        if (isNew) {
-            return
-        }
         let session = URLSession.shared
         var request = URLRequest(url: URL(string: "https://api.routechoices.com/device/" + currentDeviceId + "/registrations" )!)
         request.httpMethod = "GET"
@@ -135,6 +132,14 @@ struct ContentView: View {
 
         let task = session.dataTask(with: request, completionHandler: { (data, response, error) -> Void in
             print("check DevID")
+            if  let httpResponse = response as? HTTPURLResponse {
+                if httpResponse.statusCode == 404 {
+                    self.requestDeviceId()
+                    return
+                } else if isNew {
+                    return
+                }
+            }
             guard let data = data else {
                 return
             }

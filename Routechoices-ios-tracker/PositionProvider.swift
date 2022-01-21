@@ -11,6 +11,7 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
     var timer: Timer
     @Published var started: Bool
     var pendingStart = false
+    var flushInterval = 5.0
     
     override init() {
         let userDefaults = UserDefaults.standard
@@ -74,7 +75,7 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
         switch manager.authorizationStatus {
         case .authorizedAlways:
             locationManager.startUpdatingLocation()
-            timer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(flushBuffer), userInfo: nil, repeats: true)
+            timer = Timer.scheduledTimer(timeInterval: flushInterval, target: self, selector: #selector(flushBuffer), userInfo: nil, repeats: true)
         default:
             pendingStart = true
             locationManager.requestAlwaysAuthorization()
@@ -102,7 +103,7 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
             if pendingStart {
                 pendingStart = false
                 locationManager.startUpdatingLocation()
-                timer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(flushBuffer), userInfo: nil, repeats: true)
+                timer = Timer.scheduledTimer(timeInterval: flushInterval, target: self, selector: #selector(flushBuffer), userInfo: nil, repeats: true)
             }
         default:
             break
