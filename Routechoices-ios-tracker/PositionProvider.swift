@@ -19,7 +19,7 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
         locBuffer = []
         locationManager = CLLocationManager()
         timer = Timer()
-        
+        UIDevice.current.isBatteryMonitoringEnabled = true
         locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.allowsBackgroundLocationUpdates = true
@@ -38,6 +38,7 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
         var lats = ""
         var lons = ""
         var times = ""
+        let batt = String(describing: Int(round(UIDevice.current.batteryLevel * 100)))
         for loc in self.locBuffer {
             lats += String(describing: loc.latitude) + ","
             lons += String(describing: loc.longitude) + ","
@@ -51,7 +52,7 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
         self.deviceId = userDefaults.string(forKey: "device_id_preference") ?? ""
         
         let secret = Bundle.main.infoDictionary?["POST_LOCATION_SECRET"] ?? ""
-        let params = ["latitudes": lats, "longitudes": lons, "timestamps": times, "device_id": self.deviceId, "secret": secret]
+        let params = ["latitudes": lats, "longitudes": lons, "timestamps": times, "device_id": self.deviceId, "secret": secret, "battery": batt]
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: params)
         } catch _ {
