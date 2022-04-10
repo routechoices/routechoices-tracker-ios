@@ -19,10 +19,10 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
         locBuffer = []
         locationManager = CLLocationManager()
         timer = Timer()
-        UIDevice.current.isBatteryMonitoringEnabled = true
         locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.allowsBackgroundLocationUpdates = true
+        UIDevice.current.isBatteryMonitoringEnabled = true
         started = false
         lastTimeSinceFix = 60
         super.init()
