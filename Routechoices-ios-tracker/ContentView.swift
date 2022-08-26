@@ -49,7 +49,7 @@ struct ContentView: View {
             "copy": "Kopio",
             "start-gps": "Aloita live-gps",
             "stop-gps": "Lopeta live-gps",
-            "register": "Ilmoittautua tapahtumaan",
+            "register": "Ilmoittaudu tapahtumaan",
         ],
         "nl": [
             "dev-id": "Toestel ID",
@@ -169,20 +169,14 @@ struct ContentView: View {
     }
     private func requestDeviceId() {
         let session = URLSession.shared
-        var request = URLRequest(url: URL(string: "https://api.routechoices.com/device_id")!)
+        var request = URLRequest(url: URL(string: "https://api.routechoices.com/device/")!)
         request.httpMethod = "POST"
-
-        let secret = Bundle.main.infoDictionary?["POST_LOCATION_SECRET"] ?? ""
-        let params = ["secret": secret]
-
-        do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: params)
-        } catch _ {
-            return
-        }
 
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
+
+        let secret = Bundle.main.infoDictionary?["POST_LOCATION_SECRET"] as! String
+        request.addValue("Bearer " + secret, forHTTPHeaderField: "Authorization")
 
         let task = session.dataTask(with: request, completionHandler: { (data, response, error) -> Void in
             print("DevID")

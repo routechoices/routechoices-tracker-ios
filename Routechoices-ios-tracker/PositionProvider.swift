@@ -38,7 +38,8 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
         var lats = ""
         var lons = ""
         var times = ""
-        let batt = String(describing: Int(round(UIDevice.current.batteryLevel * 100)))
+        let batt = Int(round(UIDevice.current.batteryLevel * 100))
+
         for loc in self.locBuffer {
             lats += String(describing: loc.latitude) + ","
             lons += String(describing: loc.longitude) + ","
@@ -51,8 +52,10 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
         let userDefaults = UserDefaults.standard
         self.deviceId = userDefaults.string(forKey: "device_id_preference") ?? ""
         
-        let secret = Bundle.main.infoDictionary?["POST_LOCATION_SECRET"] ?? ""
-        let params = ["latitudes": lats, "longitudes": lons, "timestamps": times, "device_id": self.deviceId, "secret": secret, "battery": batt]
+        var params: [String:Any] = ["latitudes": lats, "longitudes": lons, "timestamps": times, "device_id": self.deviceId]
+        if (batt >= 0 && batt <= 100) {
+            params["battery"] = batt
+        }
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: params)
         } catch _ {
@@ -61,10 +64,16 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
+
+        let secret = Bundle.main.infoDictionary?["POST_LOCATION_SECRET"] as! String
+        request.addValue("Bearer " + secret, forHTTPHeaderField: "Authorization")
+
         let task = session.dataTask(with: request, completionHandler: {(data, response, error) -> Void in
-            if (data != nil && error == nil) {
-                self.locBuffer.removeAll()
-                print("Positions sent")
+            if  let httpResponse = response as? HTTPURLResponse {
+                if (httpResponse.statusCode == 201) {
+                    self.locBuffer.removeAll()
+                    print("Positions sent")
+                }
             }
         })
         task.resume()
