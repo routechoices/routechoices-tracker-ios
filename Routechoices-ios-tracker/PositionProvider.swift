@@ -72,7 +72,7 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
             if  let httpResponse = response as? HTTPURLResponse {
                 if (httpResponse.statusCode == 201) {
                     self.locBuffer.removeAll()
-                    print("Positions sent")
+                    print("Positions sent ", Date())
                 }
             }
         })
@@ -119,22 +119,19 @@ class PositionProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
             break
         }
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last {
-            if (lastLocation == nil
-                || location.timestamp.timeIntervalSince(lastLocation!.timestamp) >= 1 
-                ) && location.horizontalAccuracy <= 50 {
+        for location in locations {
+            if location.horizontalAccuracy <= 50 {
                 let position = Position(location)
-                lastLocation = location
                 locBuffer.append(position)
-                
                 print("TS: " + String(describing: position.time))
+                if lastLocation == nil || location.timestamp.timeIntervalSince(lastLocation!.timestamp) >= 1 {
+                    lastLocation = location
+                }
             }
             DispatchQueue.main.async {
-                if (self.lastLocation != nil) {
-                    self.lastTimeSinceFix = location.timestamp.timeIntervalSince(self.lastLocation!.timestamp)
-                }
+                self.lastTimeSinceFix = location.timestamp.timeIntervalSince(self.lastLocation!.timestamp)
             }
         }
     }
