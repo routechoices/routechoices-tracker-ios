@@ -15,7 +15,7 @@ class ContentViewModel: ObservableObject {
 struct ContentView: View {
     @ObservedObject var content = ContentViewModel()
     @StateObject var positionProvider = PositionProvider()
-    var supportedLang = ["en", "es", "fi", "fr", "nl", "sv"]
+    var supportedLang = ["en", "es", "fi", "fr", "nl", "pl", "sv"]
     var lang = "en"
     var texts: [String: String] = [:]
     var translations = [
