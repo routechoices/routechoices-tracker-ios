@@ -59,6 +59,14 @@ struct ContentView: View {
             "stop-gps": "Stop live GPS",
             "register": "Registreer voor event",
         ],
+        "pl": [
+            "dev-id": "Identyfikator urządzenia",
+            "fetching": "Pobieranie...",
+            "copy": "Kopiuj",
+            "start-gps": "Start śledzenia GPS",
+            "stop-gps": "Koniec śledzenia GPS",
+            "register": "Zarejestruj na zawody",
+        ],
         "sv": [
             "dev-id": "Enhets-ID",
             "fetching": "Hämtar data",
