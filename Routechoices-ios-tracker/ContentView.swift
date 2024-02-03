@@ -15,7 +15,6 @@ class ContentViewModel: ObservableObject {
 struct ContentView: View {
     @ObservedObject var content = ContentViewModel()
     @StateObject var positionProvider = PositionProvider()
-    var supportedLang = ["en", "es", "fi", "fr", "nl", "pl", "sv"]
     var lang = "en"
     var texts: [String: String] = [:]
     var translations = [
@@ -81,7 +80,7 @@ struct ContentView: View {
         let userDefaults = UserDefaults.standard
         content.deviceId = userDefaults.string(forKey: "device_id_preference") ?? ""
         let localLang = String(Locale.preferredLanguages[0].prefix(2))
-        if (supportedLang.contains(localLang)){
+        if (translations.keys.contains(localLang)){
             lang = localLang
         }
         texts = translations[lang] ?? [:]
